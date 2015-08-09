@@ -106,7 +106,7 @@ let rec eval_expr c e =
 
   | Loop e1 ->
     ignore (eval_expr c e1);
-    eval_expr c (Loop e1)
+    eval_expr c e
 
   | Label e1 ->
     let module L = MakeLabel () in

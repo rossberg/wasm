@@ -26,7 +26,7 @@ CMAS = $(LIBRARIES:%=%.cma)
 CMXAS = $(LIBRARIES:%=%.cmxa)
 TXTS = $(TEXTS:%=%.txt)
 
-OCAMLCOPTS = -w +a-4-41-42-44-45
+OCAMLCOPTS =   # -w +a-4-41-42-44-45
 
 $(NAME): $(CMXS) Makefile
 	ocamlopt $(CMXAS) $(CMXS) $(OCAMLCOPTS) -o $@

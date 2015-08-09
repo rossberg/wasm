@@ -13,12 +13,12 @@ struct
   let rec drop n xs =
     match n, xs with
     | 0, _ -> xs
-    | n, x::xs' when n > 0 -> drop (n - 1) xs'
+    | n, _::xs' when n > 0 -> drop (n - 1) xs'
     | _ -> failwith "drop"
 
   let rec last = function
     | x::[] -> x
-    | x::xs -> last xs
+    | _::xs -> last xs
     | [] -> failwith "last"
 
   let rec split_last = function

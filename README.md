@@ -95,7 +95,7 @@ binop: add | sub | mul | ...
 relop: eq | neq | lt | ...
 memop: (near|far)(unaligned)?(s|u)?
 
-expr :
+expr:
   ( nop )
   ( block <expr>+ )
   ( if <expr> <expr> <expr> )
@@ -136,10 +136,12 @@ export: ( export <var>* )
 table:  ( table <var>* )
 ```
 
+Here, productions marked with respective comments are abbreviation forms for equivalent expansions.
+
 
 ## Scripts
 
-In order to be able to check and run modules, the S-expression format supports a very, very simple notion of "script", with command as follows:
+In order to be able to check and run modules, the S-expression format supports a very, very simple notion of "script", with commands as follows:
 
 ```
 script: <cmd>*
@@ -154,7 +156,7 @@ cmd:
 
 A `memory` command allocates fresh memory, and is needed before defining a module. Invocation is only possible after a module has been defined.
 
-The interpreter also supports a "dry" mode (flag `-d`), in which modules are only validated. In this mode, `memory` and `invoke` commands are ignored.
+The interpreter also supports a "dry" mode (flag `-d`), in which modules are only validated. In this mode, `memory` and `invoke` commands are ignored (and not needed).
 
 
 ## Implementation
