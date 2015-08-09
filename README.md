@@ -178,6 +178,8 @@ A couple of random notes:
 
 * Tests.
 
+* Enable imports.
+
 * Compilation to JS.
 
 * Binary input format?
