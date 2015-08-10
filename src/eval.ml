@@ -117,8 +117,8 @@ let rec eval_expr c e =
     raise (label c x (eval_exprs c es))
 
   | Switch (e1, arms, e2) ->
-    let i = int32 (eval_expr c e1) e1.at in
-    (match List.fold_left (eval_arm c i) `Seek arms with
+    let v = unary (eval_expr c e1) e1.at in
+    (match List.fold_left (eval_arm c v) `Seek arms with
     | `Seek | `Fallthru -> eval_expr c e2
     | `Done vs -> vs
     )
@@ -169,7 +169,7 @@ let rec eval_expr c e =
     []
 
   | Const v ->
-    [v]
+    [v.it]
 
   | Unary (unop, e1) ->
     let v1 = unary (eval_expr c e1) e1.at in
@@ -199,9 +199,9 @@ and eval_exprs c = function
   | es ->
     List.concat (List.map (eval_expr c) es)
 
-and eval_arm c i stage arm =
+and eval_arm c v stage arm =
   let {value; expr = e; fallthru} = arm.it in
-  match stage, i = value.it with
+  match stage, v = value.it with
   | `Seek, true | `Fallthru, _ ->
     if fallthru
     then (ignore (eval_expr c e); `Fallthru)

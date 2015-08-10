@@ -47,6 +47,7 @@ type memop = {dist : dist; align : Memory.alignment; mem : Memory.mem_type}
 (* Expressions *)
 
 type var = int Source.phrase
+type literal = value Source.phrase
 
 type expr = expr' Source.phrase
 and expr' =
@@ -67,7 +68,7 @@ and expr' =
   | SetGlobal of var * expr
   | GetMemory of memop * expr
   | SetMemory of memop * expr * expr
-  | Const of value
+  | Const of literal
   | Unary of unop * expr
   | Binary of binop * expr * expr
   | Compare of relop * expr * expr
@@ -76,7 +77,7 @@ and expr' =
 and arm = arm' Source.phrase
 and arm' =
 {
-  value : int32 Source.phrase;
+  value : literal;
   expr : expr;
   fallthru : bool
 }

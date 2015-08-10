@@ -24,6 +24,15 @@ let ati i =
   positions_to_region (Parsing.rhs_start_pos i) (Parsing.rhs_end_pos i)
 
 let parse_error s = Error.error Source.no_region s
+
+let literal at s t =
+  try
+    match t with
+    | Types.Int32Type -> Types.Int32 (Int32.of_string s) @@ at
+    | Types.Int64Type -> Types.Int64 (Int64.of_string s) @@ at
+    | Types.Float32Type -> Types.Float32 (float_of_string s) @@ at
+    | Types.Float64Type -> Types.Float64 (float_of_string s) @@ at
+  with _ -> Error.error at "constant out of range"
 %}
 
 %token INT FLOAT TEXT VAR TYPE LPAR RPAR
@@ -66,7 +75,7 @@ value_type_list :
 
 /* Expressions */
 
-num :
+literal :
   | INT { $1 }
   | FLOAT { $1 }
 ;
@@ -104,15 +113,7 @@ expr1 :
   | SETGLOBAL var expr { SetGlobal ($2, $3) }
   | GETMEMORY expr { GetMemory ($1, $2) }
   | SETMEMORY expr expr { SetMemory ($1, $2, $3) }
-  | CONST num
-    { try
-        match $1 with
-        | Types.Int32Type -> Const (Types.Int32 (Int32.of_string $2))
-        | Types.Int64Type -> Const (Types.Int64 (Int64.of_string $2))
-        | Types.Float32Type -> Const (Types.Float32 (float_of_string $2))
-        | Types.Float64Type -> Const (Types.Float64 (float_of_string $2))
-      with _ -> Error.error (ati 2) "constant out of range"
-    }
+  | CONST literal { Const (literal (ati 2) $2 $1) }
   | UNARY expr { Unary ($1, $2) }
   | BINARY expr expr { Binary ($1, $2, $3) }
   | COMPARE expr expr { Compare ($1, $2, $3) }
@@ -127,20 +128,17 @@ expr_block :
   | expr expr expr_list { Block ($1 :: $2 :: $3) @@ at() }  /* Sugar */
 ;
 
-case_value :
-  | INT
-    { try Int32.of_string $1 @@ at() with _ ->
-        Error.error (at()) "constant out of range" }
-;
 fallthru :
   | /* empty */ { false }
   | FALLTHRU { true }
 ;
 arm :
-  | LPAR CASE case_value expr_block fallthru RPAR
-    { {value = $3; expr = $4; fallthru = $5} @@ at() }
-  | LPAR CASE case_value RPAR  /* Sugar */
-    { {value = $3; expr = Nop @@ ati 4; fallthru = true} @@ at() }
+  | LPAR CASE literal expr_block fallthru RPAR
+    { {value = literal (ati 3) $3 Types.Int32Type; expr = $4;
+       fallthru = $5} @@ at() }
+  | LPAR CASE literal RPAR  /* Sugar */
+    { {value = literal (ati 3) $3 Types.Int32Type; expr = Nop @@ ati 4;
+       fallthru = true} @@ at() }
 ;
 arms :
   | expr { [], $1 }

@@ -73,7 +73,7 @@ type expr =
   | Compare of relop * expr * expr      (* arithmetic comparison
   | Convert of cvt * expr               (* conversion
 
-and arm = {value : int32; expr : expr; fallthru : bool}
+and arm = {value : value; expr : expr; fallthru : bool}
 ```
 
 See the code for more details on the auxiliary types. It also contains ASTs for functions and modules.
@@ -123,8 +123,8 @@ expr:
   ( cast.<type>.<type> <expr> )
 
 case:
-  ( case <int> <expr>* fallthru? )  // = (case <int> (block <expr>*) fallthru?)
-  ( case <int> )                    // = (case <int> (nop) fallthru)
+  ( case <value> <expr>* fallthru? )  // = (case <int> (block <expr>*) fallthru?)
+  ( case <value> )                    // = (case <int> (nop) fallthru)
 
 module: ( module <func>* <global>* <export>* <table>* )
 func:   ( func <param>* <result>* <local>* <expr>* )

@@ -197,7 +197,7 @@ let rec check_expr c ts e =
     check_types [] ts e.at
 
   | Const v ->
-    check_types [type_value v] ts e.at
+    check_literal c ts v
 
   | Unary (unop, e1) ->
     let t = type_unop unop in
@@ -228,8 +228,12 @@ and check_exprs c ts = function
     try List.iter2 (check_expr c) (nary ts) es with Invalid_argument _ ->
       error (Source.ats es) "arity mismatch"
 
+and check_literal c ts l =
+    check_types [type_value l.it] ts l.at
+
 and check_arm c ts arm =
-  let {value = _; expr = e; fallthru} = arm.it in
+  let {value = l; expr = e; fallthru} = arm.it in
+  check_literal c [Int32Type] l;
   check_expr c (if fallthru then [] else ts) e
 
 
