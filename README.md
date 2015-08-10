@@ -35,11 +35,11 @@ For most part, the language understood by the interpreter is based on Ben's V8 p
 
 ## Core Language vs External Language
 
-The implementation tries to separate the concern of what is the language from what is its external encoding. In that spirit, the actual AST is made regular and minimal, while certain abbreviations are considered "syntactic sugar" of an external representation optimised for compactness.
+The implementation tries to separate the concern of what is the language (and its semantics) from what is its external encoding. In that spirit, the actual AST is regular and minimal, while certain abbreviations are considered "syntactic sugar" of an external representation optimised for compactness.
 
-For example, `if` always has an else-branch in the AST, but in the external format an else-less conditional is allowed as an abbreviation for one with `nop`. Simlarly, blocks can sometimes be left implicit in the S-expression format. Furthermore, fallthru is a flag on each `switch` arm in the AST, but an explicit "opcode" in the external form.
+For example, `if` always has an else-branch in the AST, but in the external format an else-less conditional is allowed as an abbreviation for one with `nop`. Simlarly, blocks can sometimes be left implicit in sub-expressions. Furthermore, fallthru is a flag on each `switch` arm in the AST, but an explicit "opcode" in the external form.
 
-Here, the external format is S-expressions, but similar considerations would apply to a binary encoding. That is, there would be codes for certain abbreviations, but these are just a coding concern.
+Here, the external format is S-expressions, but similar considerations would apply to a binary encoding. That is, there would be codes for certain abbreviations, but these are just a matter of the encoding.
 
 
 ## Internal Syntax
@@ -99,11 +99,11 @@ expr:
   ( nop )
   ( block <expr>+ )
   ( if <expr> <expr> <expr> )
-  ( if <expr> <expr> )             // = (if <expr> <expr> (nop))
-  ( loop <expr>* )                 // = (loop (block <expr>*))
-  ( label <expr>* )                // = (label (block <expr>*))
+  ( if <expr> <expr> )                ;; = (if <expr> <expr> (nop))
+  ( loop <expr>* )                    ;; = (loop (block <expr>*))
+  ( label <expr>* )                   ;; = (label (block <expr>*))
   ( break <var> <expr>* )
-  ( break )                        // = (break 0)
+  ( break )                           ;; = (break 0)
   ( switch <expr> <case>* <expr> )
   ( call <var> <expr>* )
   ( dispatch <var> <expr> <expr>* )
@@ -123,8 +123,8 @@ expr:
   ( cast.<type>.<type> <expr> )
 
 case:
-  ( case <value> <expr>* fallthru? )  // = (case <int> (block <expr>*) fallthru?)
-  ( case <value> )                    // = (case <int> (nop) fallthru)
+  ( case <value> <expr>* fallthru? )  ;; = (case <int> (block <expr>*) fallthru?)
+  ( case <value> )                    ;; = (case <int> (nop) fallthru)
 
 module: ( module <func>* <global>* <export>* <table>* )
 func:   ( func <param>* <result>* <local>* <expr>* )
@@ -138,7 +138,7 @@ table:  ( table <var>* )
 
 Here, productions marked with respective comments are abbreviation forms for equivalent expansions.
 
-Comments can be written in two ways:
+Comments can be written in one of two ways:
 
 ```
 comment:
@@ -151,27 +151,29 @@ In particular, comments of the latter form nest properly.
 
 ## Scripts
 
-In order to be able to check and run modules, the S-expression format supports a very, very simple notion of "script", with commands as follows:
+In order to be able to check and run modules for testing purposes, the S-expression format is interpreted as a very simple and dumb notion of "script", with commands as follows:
 
 ```
 script: <cmd>*
 
 cmd:
-  ( memory int )            // allocate memory
-  <module>                  // define, validate, and initialize module
-  <func>                    // = (module <func> (export 0))
-  ( invoke <var> <expr>* )  // invoke export and print result
-  ( invoke <expr>* )        // = (invoke 0 <expr>*)
+  ( memory int )            ;; allocate memory
+  <module>                  ;; define, validate, and initialize module
+  ( invoke <var> <expr>* )  ;; invoke export and print result
+  <func>                    ;; = (module <func> (export 0))
+  ( invoke <expr>* )        ;; = (invoke 0 <expr>*)
 ```
 
 A `memory` command allocates fresh memory, and is needed before defining a module. Invocation is only possible after a module has been defined.
+
+Again, this is only a meta-level for testing, and not a part of the language proper.
 
 The interpreter also supports a "dry" mode (flag `-d`), in which modules are only validated. In this mode, `memory` and `invoke` commands are ignored (and not needed).
 
 
 ## Implementation
 
-The most interesting pieces are probably the validator (`check.ml`) and the evaluator (`eval.ml`), which are written to look as much like a "specification" as possible. Hopefully, the code is fairly self-explanatory, if you have a passing familiarity with functional programming.
+The most relevant pieces are probably the validator (`check.ml`) and the evaluator (`eval.ml`). They are written to look as much like a "specification" as possible. Hopefully, the code is fairly self-explanatory, at least for those with a passing familiarity with functional programming.
 
 A couple of random notes:
 
@@ -188,8 +190,8 @@ A couple of random notes:
 
 * Tests.
 
-* Enable imports.
+* Module imports.
 
-* Compilation to JS.
+* Compilation to JS/asm.js.
 
-* Binary input format?
+* Binary format as input or output?
