@@ -26,7 +26,8 @@ type context =
 }
 
 let lookup category list x =
-  try List.nth list x.it with Invalid_argument _ ->
+  try List.nth list x.it
+  with Invalid_argument _ ->
     error x.at ("unknown " ^ category ^ " " ^ string_of_int x.it)
 
 let func c x = lookup "function" c.funcs x
@@ -225,8 +226,8 @@ and check_exprs c ts = function
   | [e] ->
     check_expr c ts e
   | es ->
-    try List.iter2 (check_expr c) (nary ts) es with Invalid_argument _ ->
-      error (Source.ats es) "arity mismatch"
+    try List.iter2 (check_expr c) (nary ts) es
+    with Invalid_argument _ -> error (Source.ats es) "arity mismatch"
 
 and check_literal c ts l =
     check_types [type_value l.it] ts l.at

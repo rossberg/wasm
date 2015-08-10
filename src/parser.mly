@@ -82,8 +82,8 @@ literal :
 
 var :
   | INT
-    { try int_of_string $1 @@ at() with _ ->
-        Error.error (at ()) "invalid variable index" }
+    { try int_of_string $1 @@ at()
+      with Invalid_argument _ -> Error.error (at ()) "invalid variable index" }
 ;
 var_list :
   | /* empty */ { [] }

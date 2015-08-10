@@ -37,7 +37,8 @@ type config =
 }
 
 let lookup category list x =
-  try List.nth list x.it with Invalid_argument _ ->
+  try List.nth list x.it
+  with Invalid_argument _ ->
     error x.at ("runtime: undefined " ^ category ^ " " ^ string_of_int x.it)
 
 let export m x = lookup "export" m.exports x
@@ -228,7 +229,8 @@ and eval_func m f vs =
   let module Return = MakeLabel () in
   let locals = List.map ref vs @ List.map eval_decl f.it.locals in
   let c = {modul = m; locals; labels = []; return = Return.label} in
-  try eval_expr c f.it.body with Return.Label vs -> vs
+  try eval_expr c f.it.body
+  with Return.Label vs -> vs
 
 
 (* Modules *)
