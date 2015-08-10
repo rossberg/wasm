@@ -20,9 +20,9 @@ type context =
   funcs : func_type list;
   globals : value_type list;
   locals : value_type list;
-  returns : value_type list;
-  tables : func_type list;
-  labels : value_type list list
+  returns : expr_type;
+  labels : expr_type list;
+  tables : func_type list
 }
 
 let lookup category list x =
@@ -115,7 +115,7 @@ let type_func f =
 (* Type Analysis *)
 
 (*
- * check_expr : context -> expr -> value_type list -> unit
+ * check_expr : context -> expr -> expr_type -> unit
  *
  * Conventions:
  *   c : context
