@@ -78,6 +78,8 @@ and arm = {value : value; expr : expr; fallthru : bool}
 
 See the code for more details on the auxiliary types. It also contains ASTs for functions and modules.
 
+As currently implemented, multiple values can be *produced* by either `Call`/`Dispatch` or `Break`/`Label`, and *consumed* by `Destruct`, `Return` or `Call`/`Dispatch`. They pass through `Block`, `Loop`, `Label` and `Switch`. This may be considered too rich, or not rich enough.
+
 
 ## External Syntax
 
