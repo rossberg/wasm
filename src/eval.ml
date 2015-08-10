@@ -9,12 +9,12 @@ open Source
 let error = Error.error
 
 
-(* Instantiated Modules *)
+(* Module Instances *)
 
 type value = Types.value
 type func = Syntax.func
 
-type modul =
+type module_instance =
 {
   funcs : func list;
   exports : func list;
@@ -30,7 +30,7 @@ type label = value list -> exn
 
 type config =
 {
-  modul : modul;
+  modul : module_instance;
   locals : value ref list;
   labels : label list;
   return : label

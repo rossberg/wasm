@@ -2,9 +2,10 @@
  * (c) 2015 Andreas Rossberg
  *)
 
-type modul
+type module_instance
 type value = Types.value
 
-val init : Syntax.modul -> Memory.t -> modul
-val invoke : modul -> int -> value list -> value list  (* raise Error *)
-val eval : modul -> Syntax.expr -> value
+val init : Syntax.modul -> Memory.t -> module_instance
+val invoke : module_instance -> int -> value list -> value list
+  (* raise Error.Error *)
+val eval : module_instance -> Syntax.expr -> value (* raise Error.Error *)

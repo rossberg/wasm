@@ -18,7 +18,7 @@ type script = command list
 (* Execution *)
 
 let current_memory : Memory.t option ref = ref None
-let current_module : Eval.modul option ref = ref None
+let current_module : Eval.module_instance option ref = ref None
 
 let trace name = if !Flags.trace then print_endline ("-- " ^ name)
 
