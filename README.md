@@ -138,6 +138,16 @@ table:  ( table <var>* )
 
 Here, productions marked with respective comments are abbreviation forms for equivalent expansions.
 
+Comments can be written in two ways:
+
+```
+comment:
+  ;; <character>* <eol>
+  (; (<character> | <comment>)* ;)
+```
+
+In particular, comments of the latter form nest properly.
+
 
 ## Scripts
 
