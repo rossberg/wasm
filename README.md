@@ -87,7 +87,7 @@ The S-expression syntax is defined in `parser.mly`, the opcodes in `lexer.mll`. 
 type: i32 | i64 | f32 | f64
 memtype: <type> | i8 | i16
 
-num: <int> | <float>
+value: <int> | <float>
 var: <int>
 
 unop:  neg | abs | not | ...
