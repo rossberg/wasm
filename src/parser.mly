@@ -97,7 +97,7 @@ expr1 :
   | NOP { Nop }
   | BLOCK expr expr_list { Block ($2 :: $3) }
   | IF expr expr expr { If ($2, $3, $4) }
-  | IF expr expr { If ($2, $3, Nop @@ ati 1) }  /* Sugar */
+  | IF expr expr { If ($2, $3, Nop @@ ati 0) }  /* Sugar */
   | LOOP expr_block { Loop $2 }
   | LABEL expr_block { Label $2 }
   | BREAK var expr_list { Break ($2, $3) }
