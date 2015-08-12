@@ -6,7 +6,7 @@ open Types
 
 (* Runtime type errors *)
 
-exception TypeError of value * value_type
+exception TypeError of int * value * value_type
 
 
 (* Int operators *)
@@ -14,7 +14,7 @@ exception TypeError of value * value_type
 module type INT =
 sig
   type t
-  val of_value : value -> t
+  val of_value : int -> value -> t
   val to_value : t -> value
   val size : int
   val neg : t -> t
@@ -49,7 +49,7 @@ struct
       | Not -> Int.lognot
       | Clz -> fun i -> i  (* TODO *)
       | Ctz -> fun i -> i  (* TODO *)
-    in fun v -> Int.to_value (f (Int.of_value v))
+    in fun v -> Int.to_value (f (Int.of_value 1 v))
 
   let binop op =
     let f = match op with
@@ -66,7 +66,7 @@ struct
       | Shl -> fun x y -> Int.shift_left x (Int.to_int y)
       | Shr -> fun x y -> Int.shift_right_logical x (Int.to_int y)
       | Sar -> fun x y -> Int.shift_right x (Int.to_int y)
-    in fun v1 v2 -> Int.to_value (f (Int.of_value v1) (Int.of_value v2))
+    in fun v1 v2 -> Int.to_value (f (Int.of_value 1 v1) (Int.of_value 2 v2))
 
   let relop op =
     let f = match op with
@@ -80,7 +80,7 @@ struct
       | GtU -> fun _ _ -> false  (* TODO *)
       | GeS -> (>=)
       | GeU -> fun _ _ -> false  (* TODO *)
-    in fun v1 v2 -> f (Int.of_value v1) (Int.of_value v2)
+    in fun v1 v2 -> f (Int.of_value 1 v1) (Int.of_value 2 v2)
 
   let cvt op =
     let f = match op with
@@ -96,7 +96,7 @@ struct
         if Int.size = 32
         then Float32 (Int.float_of_bits x)
         else Float64 (Int.float_of_bits x)
-    in fun v -> f (Int.of_value v)
+    in fun v -> f (Int.of_value 1 v)
 end
 
 module Int32X =
@@ -106,7 +106,8 @@ struct
   let to_int32 i = i
   let to_int64 = Int64.of_int32
   let to_value i = Int32 i
-  let of_value = function Int32 i -> i | v -> raise (TypeError (v, Int32Type))
+  let of_value n =
+    function Int32 i -> i | v -> raise (TypeError (n, v, Int32Type))
 end
 
 module Int64X =
@@ -115,7 +116,8 @@ struct
   let size = 64
   let to_int64 i = i
   let to_value i = Int64 i
-  let of_value = function Int64 i -> i | v -> raise (TypeError (v, Int64Type))
+  let of_value n =
+    function Int64 i -> i | v -> raise (TypeError (n, v, Int64Type))
 end
 
 module Int32Op = IntOp (Syntax.Int32Op) (Int32X)
@@ -127,7 +129,7 @@ module Int64Op = IntOp (Syntax.Int64Op) (Int64X)
 module type FLOAT =
 sig
   val size : int
-  val of_value : value -> float
+  val of_value : int -> value -> float
   val to_value : float -> value
 end
 
@@ -144,7 +146,7 @@ struct
       | Floor -> floor
       | Trunc -> fun _ -> 0.0  (* TODO *)
       | Round -> fun _ -> 0.0  (* TODO *)
-    in fun v -> Float.to_value (f (Float.of_value v))
+    in fun v -> Float.to_value (f (Float.of_value 1 v))
 
   let binop op =
     let f = match op with
@@ -154,7 +156,8 @@ struct
       | Div -> (/.)
       | Mod -> mod_float
       | CopySign -> copysign
-    in fun v1 v2 -> Float.to_value (f (Float.of_value v1) (Float.of_value v2))
+    in
+    fun v1 v2 -> Float.to_value (f (Float.of_value 1 v1) (Float.of_value 2 v2))
 
   let relop op =
     let f = match op with
@@ -164,7 +167,7 @@ struct
       | Le -> (<=)
       | Gt -> (>)
       | Ge -> (>=)
-    in fun v1 v2 -> f (Float.of_value v1) (Float.of_value v2)
+    in fun v1 v2 -> f (Float.of_value 1 v1) (Float.of_value 2 v2)
 
   let cvt op =
     let f = match op with
@@ -178,23 +181,23 @@ struct
       if Float.size = 32
       then Int32 (Int32.bits_of_float x)
       else Int64 (Int64.bits_of_float x)
-    in fun v -> f (Float.of_value v)
+    in fun v -> f (Float.of_value 1 v)
 end
 
 module Float32X =
 struct
   let size = 32
-  let to_value i = Float32 i
-  let of_value =
-    function Float32 i -> i | v -> raise (TypeError (v, Float32Type))
+  let to_value z = Float32 z
+  let of_value n =
+    function Float32 z -> z | v -> raise (TypeError (n, v, Float32Type))
 end
 
 module Float64X =
 struct
   let size = 64
-  let to_value i = Float64 i
-  let of_value =
-    function Float64 i -> i | v -> raise (TypeError (v, Float64Type))
+  let to_value z = Float64 z
+  let of_value n =
+    function Float64 z -> z | v -> raise (TypeError (n, v, Float64Type))
 end
 
 module Float32Op = FloatOp (Syntax.Float32Op) (Float32X)

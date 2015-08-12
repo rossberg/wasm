@@ -26,7 +26,7 @@ For most part, the language understood by the interpreter is based on Ben's V8 p
 
 * *Multiple Values.* Functions can return multiple values. These can be destructured with a dedicated expression. They can also be returned from a caller (e.g. for tail-calls). Parameters and results are treated fully symmetrically.
 
-* *Simple Loops*. Like in Ben's prototype, there is only one sort of loop, the infinite one, which is terminated by a `break`. In such a language, a `continue` statement actually is completely redundant, because it can already be expressed by a Break from the loop's *body*. So I dropped `continue`.
+* *Simple Loops*. Like in Ben's prototype, there is only one sort of loop, the infinite one, which can only be terminated by an explicit `break`. In such a language, a `continue` statement actually is completely redundant, because it equivalent to a `break` to a label on the loop's *body*. So I dropped `continue`.
 
 * *Break with Arguments.* In the spirit of a true expression language, `break` can carry arguments, which then become the result of the labelled expression it cuts to.
 

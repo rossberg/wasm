@@ -175,24 +175,26 @@ let rec eval_expr c e =
   | Unary (unop, e1) ->
     let v1 = unary (eval_expr c e1) e1.at in
     (try [Arithmetic.eval_unop unop v1]
-    with Arithmetic.TypeError (v, t) -> type_error e1.at v t)
+    with Arithmetic.TypeError (_, v, t) -> type_error e1.at v t)
 
   | Binary (binop, e1, e2) ->
     let v1 = unary (eval_expr c e1) e1.at in
     let v2 = unary (eval_expr c e2) e2.at in
     (try [Arithmetic.eval_binop binop v1 v2]
-    with Arithmetic.TypeError (v, t) -> type_error e1.at v t)
+    with Arithmetic.TypeError (i, v, t) ->
+      type_error (if i = 1 then e1 else e2).at v t)
 
   | Compare (relop, e1, e2) ->
     let v1 = unary (eval_expr c e1) e1.at in
     let v2 = unary (eval_expr c e2) e2.at in
     (try [Int32 Int32.(if Arithmetic.eval_relop relop v1 v2 then one else zero)]
-    with Arithmetic.TypeError (v, t) -> type_error e1.at v t)
+    with Arithmetic.TypeError (i, v, t) ->
+      type_error (if i = 1 then e1 else e2).at v t)
 
   | Convert (cvt, e1) ->
     let v1 = unary (eval_expr c e1) e1.at in
     (try [Arithmetic.eval_cvt cvt v1]
-    with Arithmetic.TypeError (v, t) -> type_error e1.at v t)
+    with Arithmetic.TypeError (_, v, t) -> type_error e1.at v t)
 
 and eval_exprs c = function
   | [e] ->
