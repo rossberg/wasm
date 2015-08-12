@@ -15,7 +15,7 @@ The interpreter can also be run as a REPL, allowing to enter pieces of scripts i
 
 ## Building
 
-You'll need OCaml. Then go to the `src` directory and simply do
+You'll need OCaml 4.02. Then go to the `src` directory and simply do
 
 ```
 make
