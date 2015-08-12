@@ -271,7 +271,7 @@ let check_export c x =
   ignore (func c x)
 
 let check_module m =
-  let {funcs; exports; tables; globals} = m.it in
+  let {funcs; exports; tables; globals; memory} = m.it in
   let c =
     {
       funcs = List.map type_func funcs;

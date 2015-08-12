@@ -169,7 +169,8 @@ func :
 
 module_fields :
   | /* empty */
-    { {funcs = []; exports = []; globals = []; tables = []} }
+    { let memory = (Int64.zero, Int64.zero) in
+      {memory; funcs = []; exports = []; globals = []; tables = []} }
   | func module_fields
     { {$2 with funcs = $1 :: $2.funcs} }
   | LPAR GLOBAL value_type_list RPAR module_fields
@@ -178,11 +179,17 @@ module_fields :
     { {$5 with exports = $3 @ $5.exports} }
   | LPAR TABLE var_list RPAR module_fields
     { {$5 with tables = ($3 @@ ati 3) :: $5.tables} }
+  | LPAR MEMORY INT INT RPAR module_fields
+    { {$6 with memory = (Int64.of_string $3, Int64.of_string $4)} }
+  | LPAR MEMORY INT RPAR module_fields  /* Sugar */
+    { {$5 with memory = (Int64.of_string $3, Int64.of_string $3)} }
 ;
 modul :
   | LPAR MODULE module_fields RPAR { $3 @@ at() }
   | func  /* Sugar */
-    { {funcs = [$1]; exports = [0 @@ at()]; globals = []; tables = []} @@ at() }
+    { let memory = (Int64.zero, Int64.zero) in
+      {funcs = [$1]; exports = [0 @@ at()]; globals = []; tables = []; memory}
+        @@ at() }
 ;
 
 
@@ -190,7 +197,6 @@ modul :
 
 cmd :
   | modul { Define $1 @@ at() }
-  | LPAR MEMORY INT RPAR { Memory (int_of_string $3) @@ at() }
   | LPAR INVOKE INT expr_list RPAR { Invoke (int_of_string $3, $4) @@ at() }
   | LPAR INVOKE expr_list RPAR { Invoke (0, $3) @@ at() }  /* Sugar */
 ;

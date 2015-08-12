@@ -4,7 +4,6 @@
 
 type command = command' Source.phrase
 and command' =
-  | Memory of int
   | Define of Syntax.modul
   | Invoke of int * Syntax.expr list
 

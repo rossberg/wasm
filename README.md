@@ -8,7 +8,7 @@ Currently, it can
 * *validate* modules defined in it,
 * *execute* invocations to functions exported by a module.
 
-The file format is a (very dumb) form of *script* that cannot just define a module, but also specify memory size and batch a sequence of invocations.
+The file format is a (very dumb) form of *script* that cannot just define a module, but also batch a sequence of invocations.
 
 The interpreter can also be run as a REPL, allowing to enter pieces of scripts interactively.
 
@@ -128,7 +128,7 @@ case:
   ( case <value> <expr>* fallthru? )  ;; = (case <int> (block <expr>*) fallthru?)
   ( case <value> )                    ;; = (case <int> (nop) fallthru)
 
-module: ( module <func>* <global>* <export>* <table>* )
+module: ( module <func>* <global>* <export>* <table>* <memory>? )
 func:   ( func <param>* <result>* <local>* <expr>* )
 param:  ( param <type>* )
 result: ( result <type>* )
@@ -136,6 +136,7 @@ local:  ( local <type>* )
 global: ( global <type>* )
 export: ( export <var>* )
 table:  ( table <var>* )
+memory: ( memory int int? )
 ```
 
 Here, productions marked with respective comments are abbreviation forms for equivalent expansions.
@@ -159,18 +160,17 @@ In order to be able to check and run modules for testing purposes, the S-express
 script: <cmd>*
 
 cmd:
-  ( memory int )            ;; allocate memory
   <module>                  ;; define, validate, and initialize module
   ( invoke <var> <expr>* )  ;; invoke export and print result
   <func>                    ;; = (module <func> (export 0))
   ( invoke <expr>* )        ;; = (invoke 0 <expr>*)
 ```
 
-A `memory` command allocates fresh memory, and is needed before defining a module. Invocation is only possible after a module has been defined.
+Invocation is only possible after a module has been defined.
 
 Again, this is only a meta-level for testing, and not a part of the language proper.
 
-The interpreter also supports a "dry" mode (flag `-d`), in which modules are only validated. In this mode, `memory` and `invoke` commands are ignored (and not needed).
+The interpreter also supports a "dry" mode (flag `-d`), in which modules are only validated. In this mode, `invoke` commands are ignored (and not needed).
 
 
 ## Implementation
@@ -191,6 +191,8 @@ A couple of random notes:
 * TODOs: unsigned and accurate float32 arithmetics.
 
 * Tests.
+
+* Growable memory.
 
 * Module imports.
 

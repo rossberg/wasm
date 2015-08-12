@@ -237,15 +237,15 @@ and eval_func m f vs =
 
 (* Modules *)
 
-let init m memory =
-  let {Syntax.funcs; exports; tables; globals} = m.it in
+let init m =
+  let {Syntax.funcs; exports; tables; globals; memory = (n, _)} = m.it in
   {
     funcs = funcs;
     exports = List.map (fun x -> List.nth funcs x.it) exports;
     tables =
       List.map (fun t -> List.map (fun x -> List.nth funcs x.it) t.it) tables;
     globals = List.map eval_decl globals;
-    memory = memory
+    memory = Memory.create (Int64.to_int n)
   }
 
 let invoke m x vs =

@@ -8,7 +8,6 @@ open Source
 
 type command = command' phrase
 and command' =
-  | Memory of int
   | Define of Syntax.modul
   | Invoke of int * Syntax.expr list
 
@@ -17,7 +16,6 @@ type script = command list
 
 (* Execution *)
 
-let current_memory : Memory.t option ref = ref None
 let current_module : Eval.module_instance option ref = ref None
 
 let trace name = if !Flags.trace then print_endline ("-- " ^ name)
@@ -25,9 +23,6 @@ let trace name = if !Flags.trace then print_endline ("-- " ^ name)
 let run_command cmd =
   try
     match cmd.it with
-    | Memory n ->
-      trace "Allocating...";
-      current_memory := Some (Memory.create n)
     | Define m ->
       trace "Checking...";
       Check.check_module m;
@@ -35,12 +30,8 @@ let run_command cmd =
         trace "Signature:";
         Print.print_module_sig m
       end;
-      let mem = match !current_memory with
-        | Some mem -> mem
-        | None -> Error.error cmd.at "no memory defined to initialize module"
-      in
       trace "Initializing...";
-      current_module := Some (Eval.init m mem)
+      current_module := Some (Eval.init m)
     | Invoke (i, es) ->
       trace "Invoking...";
       let m = match !current_module with
@@ -59,7 +50,7 @@ let dry_command cmd =
   | Define m ->
     Check.check_module m;
     if !Flags.print_sig then Print.print_module_sig m
-  | Memory _ | Invoke _ -> ()
+  | Invoke _ -> ()
 
 let run script =
   List.iter (if !Flags.dry then dry_command else run_command) script

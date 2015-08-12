@@ -1,8 +1,8 @@
 ;; (c) 2015 Andreas Rossberg
 
-(memory 1024)
-
 (module
+  (memory 1024)
+
   ;; Aligned read/write
   (func (result i32)
     (local i32 i32 i32)

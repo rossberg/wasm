@@ -99,6 +99,7 @@ type table = var list Source.phrase
 type modul = modul' Source.phrase
 and modul' =
 {
+  memory : int64 * int64;
   funcs : func list;
   exports : var list;
   tables : table list;
