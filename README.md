@@ -1,4 +1,4 @@
-# Obsolete. Moved to [https://github.com/WebAssembly/spec/ml-proto](https://github.com/WebAssembly/spec/ml-proto)
+# Obsolete. Moved to [https://github.com/WebAssembly/spec](https://github.com/WebAssembly/spec/tree/master/ml-proto)
 
 
 # WASM Interpreter
