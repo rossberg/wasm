@@ -29,7 +29,7 @@ Alternatively, you can also say (in `src`):
 ocamlbuild -libs bigarray main.native
 ```
 
-and get an executable named `src/main.native`. This avoids the need for `make` (e.g. on Windows).
+and get an executable named `src/main.native`. On Windows you'll need Cygwin.
 
 
 ## Synopsis
@@ -45,6 +45,7 @@ where `file` is a script file (see below) to be run. If no file is given, you'll
 ```
 ./wasm module.wasm -
 ```
+Note however that the REPL currently is too dumb to allow multi-line input. :)
 
 See `wasm -h` for (the few) options.
 
