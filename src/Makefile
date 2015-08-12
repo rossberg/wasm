@@ -52,7 +52,11 @@ zip: $(MLS) $(MLIS) $(MLYS) $(MLLS) Makefile $(IMLS) $(TXTS)
 clean:
 	rm -f *.cmi *.cmo *.cmx *.o *.output *.depend
 	rm -f *.native *.byte $(NAME) $(NAME).opt $(NAME).zip
+	rm -rf _build
 	rm -f *~
+
+distclean: clean
+	rm -f $(PARSERS:%=%.mli) $(PARSERS:%=%.ml) $(LEXERS:%=%.ml)
 
 %.cmi: %.mli
 	ocamlc -c $(OCAMLCOPTS) $<

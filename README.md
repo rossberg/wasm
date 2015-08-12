@@ -15,7 +15,38 @@ The interpreter can also be run as a REPL, allowing to enter pieces of scripts i
 
 ## Building
 
-You'll need OCaml. Then simply invoke `make`. You'll get an executable named `wasm`.
+You'll need OCaml. Then go to the `src` directory and simply do
+
+```
+make
+```
+
+You'll get an executable named `src/wasm`.
+
+Alternatively, you can also say (in `src`):
+
+```
+ocamlbuild -libs bigarray main.native
+```
+
+and get an executable named `src/main.native`. This avoids the need for `make` (e.g. on Windows).
+
+
+## Synopsis
+
+You can call the executable with
+
+```
+wasm [option] [file ...]
+```
+
+where `file` is a script file (see below) to be run. If no file is given, you'll get into the REPL and can enter script commands interactively. You can also get into the REPL by explicitly passing `-` as a file name. You can do that in combination to giving a module file, so that you can then invoke its exports interactively, e.g.:
+
+```
+./wasm module.wasm -
+```
+
+See `wasm -h` for (the few) options.
 
 
 ## Language
