@@ -39,7 +39,7 @@ let label c x = lookup "label" c.labels x
 
 (* Type comparison *)
 
-let check_types actual expected at =
+let check_type actual expected at =
   require (expected = [] || actual = expected) at
     ("type mismatch: expression has type " ^ string_of_expr_type actual ^
      " but the context requires " ^ string_of_expr_type expected)
@@ -127,7 +127,7 @@ let type_func f =
 let rec check_expr c ts e =
   match e.it with
   | Nop ->
-    check_types [] ts e.at
+    check_type [] ts e.at
 
   | Block es ->
     require (es <> []) e.at "invalid block";
@@ -159,43 +159,43 @@ let rec check_expr c ts e =
   | Call (x, es) ->
     let {ins; outs} = func c x in
     check_exprs c ins es;
-    check_types outs ts e.at
+    check_type outs ts e.at
 
   | Dispatch (x, e1, es) ->
     let {ins; outs} = table c x in
     check_expr c [Int32Type] e1;
     check_exprs c ins es;
-    check_types outs ts e.at
+    check_type outs ts e.at
 
   | Return es ->
     check_exprs c c.returns es
 
   | Destruct (xs, e1) ->
     check_expr c (List.map (local c) xs) e1;
-    check_types [] ts e.at
+    check_type [] ts e.at
 
   | GetLocal x ->
-    check_types [local c x] ts e.at
+    check_type [local c x] ts e.at
 
   | SetLocal (x, e1) ->
     check_expr c [local c x] e1;
-    check_types [] ts e.at
+    check_type [] ts e.at
 
   | GetGlobal x ->
-    check_types [global c x] ts e.at
+    check_type [global c x] ts e.at
 
   | SetGlobal (x, e1) ->
     check_expr c [global c x] e1;
-    check_types [] ts e.at
+    check_type [] ts e.at
 
   | GetMemory (memop, e1) ->
     check_expr c [type_dist memop.dist] e1;
-    check_types [type_mem memop.mem] ts e.at
+    check_type [type_mem memop.mem] ts e.at
 
   | SetMemory (memop, e1, e2) ->
     check_expr c [type_dist memop.dist] e1;
     check_expr c [type_mem memop.mem] e2;
-    check_types [] ts e.at
+    check_type [] ts e.at
 
   | Const v ->
     check_literal c ts v
@@ -203,24 +203,24 @@ let rec check_expr c ts e =
   | Unary (unop, e1) ->
     let t = type_unop unop in
     check_expr c [t] e1;
-    check_types [t] ts e.at
+    check_type [t] ts e.at
 
   | Binary (binop, e1, e2) ->
     let t = type_binop binop in
     check_expr c [t] e1;
     check_expr c [t] e2;
-    check_types [t] ts e.at
+    check_type [t] ts e.at
 
   | Compare (relop, e1, e2) ->
     let t = type_relop relop in
     check_expr c [t] e1;
     check_expr c [t] e2;
-    check_types [Int32Type] ts e.at
+    check_type [Int32Type] ts e.at
 
   | Convert (cvt, e1) ->
     let t1, t = type_cvt e.at cvt in
     check_expr c [t1] e1;
-    check_types [t] ts e.at
+    check_type [t] ts e.at
 
 and check_exprs c ts = function
   | [e] ->
@@ -230,7 +230,7 @@ and check_exprs c ts = function
     with Invalid_argument _ -> error (Source.ats es) "arity mismatch"
 
 and check_literal c ts l =
-    check_types [type_value l.it] ts l.at
+    check_type [type_value l.it] ts l.at
 
 and check_arm c ts arm =
   let {value = l; expr = e; fallthru} = arm.it in
